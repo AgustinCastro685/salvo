@@ -1,6 +1,5 @@
-package com.codeoftheweb.salvo.com.codeoftheweb.salvo.models;
+package com.codeoftheweb.salvo.models;
 
-import com.sun.javafx.collections.MappingChange;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;

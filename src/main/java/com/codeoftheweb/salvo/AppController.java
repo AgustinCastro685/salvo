@@ -1,7 +1,7 @@
 package com.codeoftheweb.salvo;
 
-import com.codeoftheweb.salvo.com.codeoftheweb.salvo.repository.GamePlayerRepository;
-import com.codeoftheweb.salvo.com.codeoftheweb.salvo.repository.GameRepository;
+import com.codeoftheweb.salvo.repository.GamePlayerRepository;
+import com.codeoftheweb.salvo.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
