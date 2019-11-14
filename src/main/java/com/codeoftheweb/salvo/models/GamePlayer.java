@@ -6,11 +6,12 @@ import javax.persistence.*;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 @Entity
 public class GamePlayer {
 
-  @Id
+@Id
 @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
 @GenericGenerator(name = "native", strategy = "native")
 
@@ -22,10 +23,16 @@ public class GamePlayer {
   @JoinColumn(name="player_id")
   private Player player;
 
+  @OneToMany(mappedBy="gamePlayer", fetch=FetchType.EAGER)
+  private Set<Ship> ships;
+
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name="game_id")
   private Game game;
 
+  public Set<Ship> getShips() {
+    return ships;
+  }
 
   public Map<String, Object> makeGamePlayerDTO(){
     Map<String,Object> dto = new LinkedHashMap<>();
@@ -33,11 +40,6 @@ public class GamePlayer {
     dto.put("player" ,this.getPlayer().makePlayerDTO());
     return dto;
   }
-
-
-
-
-
 
   public long getId() {
     return id;
