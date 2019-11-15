@@ -10,18 +10,26 @@ import java.util.Set;
 @Entity
 public class Player {
 
-@Id
-@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-@GenericGenerator(name = "native", strategy = "native")
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+  @GenericGenerator(name = "native", strategy = "native")
 
   private long id;
 
-  @OneToMany(mappedBy="player", fetch=FetchType.EAGER)
-  private Set<GamePlayer>gamePlayers;
+  @OneToMany(mappedBy = "player", fetch = FetchType.EAGER)
+  private Set<GamePlayer> gamePlayers;
   private String userName;
 
-  public Map<String, Object> makePlayerDTO(){
-    Map<String,Object> dto = new LinkedHashMap<>();
+
+  public Player() {
+  }
+
+  public Player(String userName) {
+    this.userName = userName;
+  }
+
+  public Map<String, Object> makePlayerDTO() {
+    Map<String, Object> dto = new LinkedHashMap<>();
     dto.put("id", this.getId());
     dto.put("email", this.getUserName());
     return dto;
@@ -49,13 +57,6 @@ public class Player {
   }
 
   public void setUserName(String userName) {
-    this.userName = userName;
-  }
-
-  public Player() {
-  }
-
-  public Player(String userName) {
     this.userName = userName;
   }
 

@@ -11,31 +11,35 @@ import java.util.stream.Collectors;
 
 @Entity
 public class Game {
-@Id
-@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-@GenericGenerator(name = "native", strategy = "native")
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+  @GenericGenerator(name = "native", strategy = "native")
 
   private long id;
 
   private Date creationDate;
 
-  @OneToMany(mappedBy="game", fetch=FetchType.EAGER)
+  @OneToMany(mappedBy = "game", fetch = FetchType.EAGER)
   private Set<GamePlayer> gamePlayers;
 
-  public Map<String, Object> makeGameDTO(){
-    Map<String,Object> dto = new LinkedHashMap<>();
+  public Game() {
+    this.creationDate = new Date();
+  }
+
+  public Game(Date creationDate) {
+    this.creationDate = creationDate;
+  }
+
+  public Map<String, Object> makeGameDTO() {
+    Map<String, Object> dto = new LinkedHashMap<>();
     dto.put("id", this.getId());
-    dto.put("created" ,this.getCreationDate());
+    dto.put("created", this.getCreationDate());
     dto.put("gamePlayers", this.getGamePlayers()
             .stream()
             .map(gamePlayer -> gamePlayer.makeGamePlayerDTO())
             .collect(Collectors.toList()));
     return dto;
 
-  }
-
-  public Game() {
-    this.creationDate = new Date();
   }
 
   public Set<GamePlayer> getGamePlayers() {
@@ -61,8 +65,5 @@ public class Game {
   public void getGamePlayers(Set<GamePlayer> gamePlayers) {
     this.gamePlayers = gamePlayers;
   }
-
-  public Game(Date creationDate) {
-    this.creationDate = creationDate;
-  }
 }
+

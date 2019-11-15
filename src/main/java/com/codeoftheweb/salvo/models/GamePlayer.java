@@ -11,33 +11,43 @@ import java.util.Set;
 @Entity
 public class GamePlayer {
 
-@Id
-@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-@GenericGenerator(name = "native", strategy = "native")
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+  @GenericGenerator(name = "native", strategy = "native")
 
   private long id;
 
   private Date joinDate;
 
   @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name="player_id")
+  @JoinColumn(name = "player_id")
   private Player player;
 
-  @OneToMany(mappedBy="gamePlayer", fetch=FetchType.EAGER)
+  @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.EAGER)
   private Set<Ship> ships;
 
   @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name="game_id")
+  @JoinColumn(name = "game_id")
   private Game game;
+
+  public GamePlayer(Player player, Game game) {
+    this.joinDate = new Date();
+    this.player = player;
+    this.game = game;
+  }
+
+  public GamePlayer() {
+    this.joinDate = new Date();
+  }
 
   public Set<Ship> getShips() {
     return ships;
   }
 
-  public Map<String, Object> makeGamePlayerDTO(){
-    Map<String,Object> dto = new LinkedHashMap<>();
+  public Map<String, Object> makeGamePlayerDTO() {
+    Map<String, Object> dto = new LinkedHashMap<>();
     dto.put("id", this.getId());
-    dto.put("player" ,this.getPlayer().makePlayerDTO());
+    dto.put("player", this.getPlayer().makePlayerDTO());
     return dto;
   }
 
@@ -72,16 +82,5 @@ public class GamePlayer {
   public void setGame(Game game) {
     this.game = game;
   }
-
-  public GamePlayer() {
-  this.joinDate=new Date();
-  }
-
-  public GamePlayer(Player player, Game game){
-   this.joinDate=new Date();
-   this.player=player;
-   this.game=game;
- }
-
 
 }

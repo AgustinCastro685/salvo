@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
-  public class AppController{
+public class AppController {
 
   @Autowired
   private GamePlayerRepository gamePlayerRepository;
@@ -27,10 +27,10 @@ import java.util.stream.Collectors;
   @RequestMapping("/games")
   public List<Map<String, Object>> getGameAll() {
 
-  return gameRepository.findAll()
-    .stream()
-    .map(game -> game.makeGameDTO())
-    .collect(Collectors.toList());
+    return gameRepository.findAll()
+            .stream()
+            .map(game -> game.makeGameDTO())
+            .collect(Collectors.toList());
 
   }
 
@@ -39,16 +39,15 @@ import java.util.stream.Collectors;
 
     GamePlayer gamePlayer;
     Game game2;
-    gamePlayer=gamePlayerRepository.findById(gamePlayer_id).get();
-    game2=gamePlayer.getGame();
-    Map<String,  Object> gameData = game2.makeGameDTO();
-    gameData.put("ships",gamePlayer.getShips()
+    gamePlayer = gamePlayerRepository.findById(gamePlayer_id).get();
+    game2 = gamePlayer.getGame();
+    Map<String, Object> gameData = game2.makeGameDTO();
+    gameData.put("ships", gamePlayer.getShips()
             .stream()
             .map(ship -> ship.makeShipDTO())
             .collect(Collectors.toList()));
     return gameData;
   }
-
 
 
 }
