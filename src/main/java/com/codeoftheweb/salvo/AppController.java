@@ -2,6 +2,7 @@ package com.codeoftheweb.salvo;
 
 import com.codeoftheweb.salvo.models.Game;
 import com.codeoftheweb.salvo.models.GamePlayer;
+import com.codeoftheweb.salvo.models.Salvo;
 import com.codeoftheweb.salvo.repository.GamePlayerRepository;
 import com.codeoftheweb.salvo.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,7 @@ public class AppController {
 
     GamePlayer gamePlayer;
     Game game2;
+    Salvo salvo1;
     gamePlayer = gamePlayerRepository.findById(gamePlayer_id).get();
     game2 = gamePlayer.getGame();
     Map<String, Object> gameData = game2.makeGameDTO();
@@ -46,6 +48,12 @@ public class AppController {
             .stream()
             .map(ship -> ship.makeShipDTO())
             .collect(Collectors.toList()));
+    gameData.put("salvoes", gamePlayer.getGame().getGamePlayers()
+            .stream()
+            .flatMap(gamePlayer1 -> gamePlayer1.getSalvoes().stream().map(salvo -> salvo.makeSalvoDTO()))
+            .collect(Collectors.toList()));
+
+
     return gameData;
   }
 

@@ -1,19 +1,14 @@
 package com.codeoftheweb.salvo;
 
-import com.codeoftheweb.salvo.models.Game;
-import com.codeoftheweb.salvo.models.GamePlayer;
-import com.codeoftheweb.salvo.models.Player;
-import com.codeoftheweb.salvo.models.Ship;
-import com.codeoftheweb.salvo.repository.GamePlayerRepository;
-import com.codeoftheweb.salvo.repository.GameRepository;
-import com.codeoftheweb.salvo.repository.PlayerRepository;
-import com.codeoftheweb.salvo.repository.ShipRepository;
+import com.codeoftheweb.salvo.models.*;
+import com.codeoftheweb.salvo.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,7 +20,7 @@ public class SalvoApplication {
   }
 
   @Bean
-  public CommandLineRunner initData(PlayerRepository repository, GamePlayerRepository repositoryPG, GameRepository repositoryG, ShipRepository repositoryS) {
+  public CommandLineRunner initData(PlayerRepository repository, GamePlayerRepository repositoryPG, GameRepository repositoryG, ShipRepository repositoryS, SalvoRepository repositorySalvo) {
     return (args) -> {
       // save a couple of customers
       Player player1 = new Player("malena@gmail.com");
@@ -58,6 +53,29 @@ public class SalvoApplication {
       Ship ship1 = new Ship("Acorazado", gamePlayer1, shipLocation1);
       Ship ship2 = new Ship("Buque", gamePlayer2, shipLocation2);
 
+
+      List<String> salvoLocation1 = new LinkedList<>();
+      salvoLocation1.add("B3");
+      salvoLocation1.add("E5");
+      salvoLocation1.add("D7");
+
+
+      List<String> salvoLocation2 = new LinkedList<>();
+      salvoLocation2.add("E3");
+      salvoLocation2.add("G5");
+      salvoLocation2.add("C4");
+      Salvo salvo1 = new Salvo();
+      Salvo salvo2 = new Salvo();
+
+      salvo1.setSalvoLocations(salvoLocation1);
+      salvo1.setNumTurno(1);
+      salvo1.setGamePlayer(gameplayer3);
+
+      salvo2.setSalvoLocations(salvoLocation2);
+      salvo2.setNumTurno(2);
+      salvo2.setGamePlayer(gamePlayer2);
+
+
       repository.save(player1);
       repository.save(player2);
       repository.save(player3);
@@ -74,6 +92,9 @@ public class SalvoApplication {
 
       repositoryS.save(ship1);
       repositoryS.save(ship2);
+
+      repositorySalvo.save(salvo1);
+      repositorySalvo.save(salvo2);
     };
   }
 }
