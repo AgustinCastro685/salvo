@@ -20,12 +20,23 @@ public class Player {
   private Set<GamePlayer> gamePlayers;
   private String userName;
 
+  @OneToMany(mappedBy = "player", fetch = FetchType.EAGER)
+  private Set<Score>scores ;
 
-  public Player() {
+  public Player()
+  {
+    //this.scores = new Set<Score>scores();
+   //     setScores();
+  }
+
+  public Player(String userName, Set<Score> scores) {
+    this.userName = userName;
+    this.scores = scores;
   }
 
   public Player(String userName) {
     this.userName = userName;
+
   }
 
   public Map<String, Object> makePlayerDTO() {
@@ -34,6 +45,14 @@ public class Player {
     dto.put("email", this.getUserName());
     return dto;
 
+  }
+
+  public Set<Score> getScores() {
+    return scores;
+  }
+
+  public void setScores(Set<Score> scores) {
+    this.scores = scores;
   }
 
   public long getId() {
@@ -58,6 +77,12 @@ public class Player {
 
   public void setUserName(String userName) {
     this.userName = userName;
+  }
+
+  public Score getScore(Game game){
+    return this.getScores()
+            .stream().filter(score -> score.getGame().getId()== game.getId())
+            .findFirst().orElse(null);
   }
 
 }

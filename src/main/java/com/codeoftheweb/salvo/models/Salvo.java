@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Entity
 public class Salvo {
@@ -21,7 +22,7 @@ public class Salvo {
   private GamePlayer gamePlayer;
 
 
-  private int numTurno = 0;
+  private int turn = 0;
 
   @ElementCollection
   @Column(name = "Locations")
@@ -33,7 +34,7 @@ public class Salvo {
 
   public Salvo(long id, int numTurno, List<String> salvoLocations, GamePlayer gamePlayer) {
     this.id = id;
-    this.numTurno = numTurno;
+    this.turn = numTurno;
     this.salvoLocations = salvoLocations;
     this.gamePlayer = gamePlayer;
   }
@@ -41,7 +42,7 @@ public class Salvo {
 
   public Map<String, Object> makeSalvoDTO() {
     Map<String, Object> dto = new LinkedHashMap<>();
-    dto.put("turno", this.getNumTurno());
+    dto.put("turn", this.getTurn());
     dto.put("player", this.getGamePlayer().getId());
     dto.put("locations", this.getSalvoLocations());
     return dto;
@@ -56,12 +57,12 @@ public class Salvo {
     this.id = id;
   }
 
-  public int getNumTurno() {
-    return numTurno;
+  public int getTurn() {
+    return turn;
   }
 
-  public void setNumTurno(int numTurno) {
-    this.numTurno = numTurno;
+  public void setTurn(int numTurno) {
+    this.turn = numTurno;
   }
 
   public List<String> getSalvoLocations() {

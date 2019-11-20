@@ -28,10 +28,13 @@ public class AppController {
   @RequestMapping("/games")
   public List<Map<String, Object>> getGameAll() {
 
+    GamePlayer gamePlayer;
     return gameRepository.findAll()
             .stream()
             .map(game -> game.makeGameDTO())
             .collect(Collectors.toList());
+
+
 
   }
 
@@ -52,7 +55,6 @@ public class AppController {
             .stream()
             .flatMap(gamePlayer1 -> gamePlayer1.getSalvoes().stream().map(salvo -> salvo.makeSalvoDTO()))
             .collect(Collectors.toList()));
-
 
     return gameData;
   }

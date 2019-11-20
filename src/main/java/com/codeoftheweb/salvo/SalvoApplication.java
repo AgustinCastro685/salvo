@@ -20,7 +20,7 @@ public class SalvoApplication {
   }
 
   @Bean
-  public CommandLineRunner initData(PlayerRepository repository, GamePlayerRepository repositoryPG, GameRepository repositoryG, ShipRepository repositoryS, SalvoRepository repositorySalvo) {
+  public CommandLineRunner initData(PlayerRepository repository, GamePlayerRepository repositoryPG, GameRepository repositoryG, ShipRepository repositoryS, SalvoRepository repositorySalvo,ScoreRepository repositoryScore) {
     return (args) -> {
       // save a couple of customers
       Player player1 = new Player("malena@gmail.com");
@@ -28,16 +28,32 @@ public class SalvoApplication {
       Player player3 = new Player("paola@gmail.com");
       Player player4 = new Player("aaa.com");
 
+      repository.save(player1);
+      repository.save(player2);
+      repository.save(player3);
+      repository.save(player4);
+
+
       Game game1 = new Game();
       Game game2 = new Game();
+
+      repositoryG.save(game1);
+      repositoryG.save(game2);
+
 
       Date date = new Date();
       Date date1 = new Date();
 
-      GamePlayer gamePlayer1 = new GamePlayer(player3, game1);
-      GamePlayer gamePlayer2 = new GamePlayer(player2, game1);
-      GamePlayer gameplayer3 = new GamePlayer(player3, game2);
-      GamePlayer gameplayer4 = new GamePlayer(player4, game2);
+      GamePlayer gamePlayer1 = new GamePlayer(date,player1, game1);
+      GamePlayer gamePlayer2 = new GamePlayer(date1,player2, game1);
+      GamePlayer gameplayer3 = new GamePlayer(date ,player3, game2);
+      GamePlayer gameplayer4 = new GamePlayer(date1, player4, game2);
+
+      repositoryPG.save(gamePlayer1);
+      repositoryPG.save(gamePlayer2);
+      repositoryPG.save(gameplayer3);
+      repositoryPG.save(gameplayer4);
+
 
       List<String> shipLocation1 = new LinkedList<>();
       shipLocation1.add("B1");
@@ -52,6 +68,9 @@ public class SalvoApplication {
 
       Ship ship1 = new Ship("Acorazado", gamePlayer1, shipLocation1);
       Ship ship2 = new Ship("Buque", gamePlayer2, shipLocation2);
+
+      repositoryS.save(ship1);
+      repositoryS.save(ship2);
 
 
       List<String> salvoLocation1 = new LinkedList<>();
@@ -68,33 +87,35 @@ public class SalvoApplication {
       Salvo salvo2 = new Salvo();
 
       salvo1.setSalvoLocations(salvoLocation1);
-      salvo1.setNumTurno(1);
-      salvo1.setGamePlayer(gameplayer3);
+      salvo1.setTurn(1);
+      salvo1.setGamePlayer(gamePlayer1);
 
       salvo2.setSalvoLocations(salvoLocation2);
-      salvo2.setNumTurno(2);
+      salvo2.setTurn(2);
       salvo2.setGamePlayer(gamePlayer2);
-
-
-      repository.save(player1);
-      repository.save(player2);
-      repository.save(player3);
-      repository.save(player4);
-
-      repositoryG.save(game1);
-      repositoryG.save(game2);
-
-      repositoryPG.save(gamePlayer1);
-      repositoryPG.save(gamePlayer2);
-
-      repositoryPG.save(gameplayer3);
-      repositoryPG.save(gameplayer4);
-
-      repositoryS.save(ship1);
-      repositoryS.save(ship2);
 
       repositorySalvo.save(salvo1);
       repositorySalvo.save(salvo2);
+
+      Date date3= new Date();
+      Date date4= new Date();
+
+      Score score1= new Score(game1,player1,1.0,date3);
+      Score score2= new Score(game1,player2,0.5,date4);
+      Score score3= new Score(game2,player3,0.0,date3);
+      Score score4= new Score(game2,player4,1.0,date4);
+
+      repositoryScore.save(score1);
+      repositoryScore.save(score2);
+      repositoryScore.save(score3);
+      repositoryScore.save(score4);
+
+
+
+
+
+
+
     };
   }
 }
