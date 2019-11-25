@@ -30,7 +30,7 @@ public class GamePlayer {
   @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.EAGER)
   private Set<Salvo> salvoes;
 
-  public GamePlayer(Date date ,Player player, Game game) {
+  public GamePlayer(Date date, Player player, Game game) {
     this.joinDate = new Date();
     this.player = player;
     this.game = game;
@@ -95,7 +95,7 @@ public class GamePlayer {
     this.salvoes = salvoes;
   }
 
-  public Score getScore(){
+  public Score getScore() {
     return this.player.getScore(this.getGame());
   }
 }
