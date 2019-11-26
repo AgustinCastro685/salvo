@@ -98,4 +98,9 @@ public class GamePlayer {
   public Score getScore() {
     return this.player.getScore(this.getGame());
   }
+
+  public GamePlayer(Player player, Game game) {
+    this.player = player;
+    this.game = game;
+  }
 }

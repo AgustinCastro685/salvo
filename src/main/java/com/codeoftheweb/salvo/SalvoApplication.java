@@ -173,9 +173,7 @@ public class SalvoApplication {
     http.authorizeRequests()
             .antMatchers("/api/game_view/*","/web/game.html?gp=*").hasAuthority("USER")
             .antMatchers("/web/**").permitAll()
-            .antMatchers("/api/players").permitAll()
-            .antMatchers("/api/games").permitAll()
-            .antMatchers("/web/games.html").permitAll()
+            .antMatchers("/api/**").permitAll()
             .antMatchers("/rest").denyAll()
             .anyRequest().denyAll();
     http.formLogin()
