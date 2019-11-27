@@ -40,6 +40,9 @@ public class GamePlayer {
     this.joinDate = new Date();
   }
 
+  public GamePlayer(Date date, Game g1, Player p1) {
+  }
+
   public Set<Ship> getShips() {
     return ships;
   }
