@@ -89,8 +89,8 @@ public class SalvoApplication {
       shipLocation2.add("D9");
 
 
-      Ship ship1 = new Ship("Acorazado", gamePlayer1, shipLocation1);
-      Ship ship2 = new Ship("Buque", gamePlayer2, shipLocation2);
+      Ship ship1 = new Ship("destroyer", gamePlayer1, shipLocation1);
+      Ship ship2 = new Ship("battleship", gamePlayer2, shipLocation2);
 
       repositoryS.save(ship1);
       repositoryS.save(ship2);
@@ -100,12 +100,16 @@ public class SalvoApplication {
       salvoLocation1.add("B3");
       salvoLocation1.add("E5");
       salvoLocation1.add("D7");
+      salvoLocation1.add("D5");
+      salvoLocation1.add("D6");
 
 
       List<String> salvoLocation2 = new LinkedList<>();
       salvoLocation2.add("E3");
       salvoLocation2.add("G5");
       salvoLocation2.add("C4");
+      salvoLocation2.add("C7");
+      salvoLocation2.add("C5");
       Salvo salvo1 = new Salvo();
       Salvo salvo2 = new Salvo();
 
