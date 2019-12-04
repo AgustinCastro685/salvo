@@ -63,7 +63,7 @@ public class AppController {
 
     Map<String, Object> hits = new LinkedHashMap<>();
     Map<String, Object> gameData = game2.makeGameDTO();
-    gameData.put("gameState",getState(gamePlayer,gamePlayer.getOpponent()));
+    gameData.put("gameState", getState(gamePlayer, gamePlayer.getOpponent()));
     gameData.put("ships", gamePlayer.getShips()
             .stream()
             .map(ship -> ship.makeShipDTO())
@@ -72,9 +72,13 @@ public class AppController {
             .stream()
             .flatMap(gamePlayer1 -> gamePlayer1.getSalvoes().stream().map(salvo -> salvo.makeSalvoDTO()))
             .collect(Collectors.toList()));
-    hits.put("self",gamePlayer.makeHitsDTO(gamePlayer));
-            //new ArrayList<>());
-    hits.put("opponent", gamePlayer.makeHitsDTO(gamePlayer.getOpponent()));
+    if (Objects.nonNull(gamePlayer.getOpponent())) {
+      hits.put("self", gamePlayer.makeHitsDTO(gamePlayer));
+      hits.put("opponent", gamePlayer.makeHitsDTO(gamePlayer.getOpponent()));
+    } else {
+      hits.put("self", new ArrayList<>());
+      hits.put("opponent", new ArrayList<>());
+    }
     gameData.put("hits", hits);
 
     return new ResponseEntity<>(gameData, HttpStatus.OK);
@@ -82,16 +86,16 @@ public class AppController {
 
   private String getState(GamePlayer gamePlayerSelf, GamePlayer gamePlayerOpponent) {
 
-    if(gamePlayerSelf.getShips().isEmpty()) {
+    if (gamePlayerSelf.getShips().isEmpty()) {
       return "PLACESHIPS";
     }
-    if(gamePlayerSelf.getGame().getGamePlayers().size()==1){
+    if (gamePlayerSelf.getGame().getGamePlayers().size() == 1) {
       return "WAITINGFOROPP";
     }
-    if(gamePlayerSelf.getId()<gamePlayerOpponent.getId()){
+    if (gamePlayerSelf.getId() < gamePlayerOpponent.getId()) {
       return "PLAY";
     }
-    if(gamePlayerSelf.getId()>gamePlayerOpponent.getId()){
+    if (gamePlayerSelf.getId() > gamePlayerOpponent.getId()) {
       return "WAIT";
     }
     return "LOST";

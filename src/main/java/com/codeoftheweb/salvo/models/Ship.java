@@ -25,7 +25,7 @@ public class Ship {
   private GamePlayer gamePlayer;
 
   @ElementCollection
-  @Column(name="shipLocations")
+  @Column(name = "shipLocations")
   private List<String> shipLocations;
 
   public Ship(String type, GamePlayer gamePlayer, List<String> shipLocations) {

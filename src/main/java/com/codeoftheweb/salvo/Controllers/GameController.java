@@ -142,9 +142,11 @@ public class GameController {
       return new ResponseEntity<>(Util.makeMap("Error", "Ya colocaste tus salvos en este turno"), HttpStatus.FORBIDDEN);
     }
 
+    salvo.setTurn(gamePlayer.getSalvoes().size() +1);
     salvo.setGamePlayer(gamePlayer);
     salvoRepository.save(salvo);
     return new ResponseEntity<>(Util.makeMap("Salvos","Salvos added"), HttpStatus.CREATED);
+
   }
 
 }
