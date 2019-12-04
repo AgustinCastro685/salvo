@@ -97,8 +97,11 @@ public class AppController {
     }
     if (gamePlayerSelf.getId() > gamePlayerOpponent.getId()) {
       return "WAIT";
+    }if(gamePlayerSelf.countHitsWon()==gamePlayerOpponent.getShips().size()){
+       return "WON";
     }
+    if(gamePlayerSelf.countHitsWon()==gamePlayerOpponent.countHitsWon())//&& //tengo que fijarme si el turno es el mismo )
+     {  return "TIE";}
     return "LOST";
   }
-
 }

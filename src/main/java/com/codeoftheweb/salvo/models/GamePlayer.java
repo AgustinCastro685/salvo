@@ -193,6 +193,11 @@ public class GamePlayer {
     }
     return contador;
   }
+  public int countHitsWon(){
+    int hits=0;
 
+    hits=(carrier+ battleship + submarine+ destroyer+ patrolboat);
+    return hits;
 
+  }
 }
