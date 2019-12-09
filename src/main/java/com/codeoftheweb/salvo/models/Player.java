@@ -4,6 +4,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,29 +19,28 @@ public class Player {
   private long id;
 
   @OneToMany(mappedBy = "player", fetch = FetchType.EAGER)
-  private Set<GamePlayer> gamePlayers;
+  private List<GamePlayer> gamePlayers;
   private String userName;
 
   @OneToMany(mappedBy = "player", fetch = FetchType.EAGER)
-  private Set<Score>scores ;
+  private Set<Score> scores;
 
   private String password;
 
-  public Player()
-  {
+  public Player() {
     //this.scores = new Set<Score>scores();
-   //     setScores();
+    //     setScores();
   }
 
-  public Player(String userName, Set<Score> scores,String password) {
+  public Player(String userName, Set<Score> scores, String password) {
     this.userName = userName;
     this.scores = scores;
-    this.password=password;
+    this.password = password;
   }
 
-  public Player(String userName,String password) {
+  public Player(String userName, String password) {
     this.userName = userName;
-    this.password=password;
+    this.password = password;
   }
 
   public Map<String, Object> makePlayerDTO() {
@@ -67,11 +67,11 @@ public class Player {
     this.id = id;
   }
 
-  public Set<GamePlayer> getGamePlayers() {
+  public List<GamePlayer> getGamePlayers() {
     return gamePlayers;
   }
 
-  public void setGamePlayers(Set<GamePlayer> gamePlayers) {
+  public void setGamePlayers(List<GamePlayer> gamePlayers) {
     this.gamePlayers = gamePlayers;
   }
 
@@ -91,9 +91,9 @@ public class Player {
     this.password = password;
   }
 
-  public Score getScore(Game game){
+  public Score getScore(Game game) {
     return this.getScores()
-            .stream().filter(score -> score.getGame().getId()== game.getId())
+            .stream().filter(score -> score.getGame().getId() == game.getId())
             .findFirst().orElse(null);
   }
 

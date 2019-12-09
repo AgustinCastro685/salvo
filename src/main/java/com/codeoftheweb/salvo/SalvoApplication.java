@@ -82,16 +82,6 @@ public class SalvoApplication {
 
       Date date3 = new Date();
       Date date4 = new Date();
-
-      Score score1 = new Score(game1, player1, 1.0, date3);
-      Score score2 = new Score(game1, player2, 0.5, date4);
-      Score score3 = new Score(game2, player3, 0.0, date3);
-      Score score4 = new Score(game2, player4, 1.0, date4);
-
-      repositoryScore.save(score1);
-      repositoryScore.save(score2);
-      repositoryScore.save(score3);
-      repositoryScore.save(score4);
     };
   }
 

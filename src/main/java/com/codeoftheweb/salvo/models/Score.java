@@ -8,10 +8,10 @@ import java.util.*;
 @Entity
 public class Score {
 
-@Id
-@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-@GenericGenerator(name = "native", strategy = "native")
-private long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+  @GenericGenerator(name = "native", strategy = "native")
+  private long id;
 
 
   @ManyToOne(fetch = FetchType.EAGER)
@@ -27,12 +27,12 @@ private long id;
   private Date finishDate;
 
 
-  public Map<String,Object> makeScoreDTO(){
-    Map<String,Object> dto =new LinkedHashMap<>();
-    dto.put("player",this.getPlayer().getId());
-    dto.put("score",this.getScore());
-    dto.put("finishDate",this.getFinishDate().getTime());
-    return  dto;
+  public Map<String, Object> makeScoreDTO() {
+    Map<String, Object> dto = new LinkedHashMap<>();
+    dto.put("player", this.getPlayer().getId());
+    dto.put("score", this.getScore());
+    dto.put("finishDate", this.getFinishDate().getTime());
+    return dto;
   }
 
   public Player getPlayer() {
@@ -78,7 +78,7 @@ private long id;
     this.finishDate = finishDate;
   }
 
-  public Score( Game game, Player player, double score, Date finishDate) {
+  public Score(Game game, Player player, double score, Date finishDate) {
     this.game = game;
     this.player = player;
     this.score = score;
