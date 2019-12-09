@@ -187,11 +187,11 @@ public class GamePlayer {
     List<Long> totalHits = new ArrayList<>();
     List<Salvo> salvoOpponent = new ArrayList<>(this.getOpponent().getSalvoes());
 
-    totalHits.add(salvoOpponent.stream().map(salvo -> salvo.countHits((this.getShips().stream().filter(ship -> ship.getType().equals("carrier")).findFirst().orElse(new Ship())))).mapToLong(x -> x).sum());//reduce(Long::sum).get());
-    totalHits.add(salvoOpponent.stream().map(salvo -> salvo.countHits((this.getShips().stream().filter(ship -> ship.getType().equals("battleship")).findFirst().orElse(new Ship())))).mapToLong(x -> x).sum());//reduce(Long::sum).get());
-    totalHits.add(salvoOpponent.stream().map(salvo -> salvo.countHits((this.getShips().stream().filter(ship -> ship.getType().equals("submarine")).findFirst().orElse(new Ship())))).mapToLong(x -> x).sum());//reduce(Long::sum).get());
-    totalHits.add(salvoOpponent.stream().map(salvo -> salvo.countHits((this.getShips().stream().filter(ship -> ship.getType().equals("destroyer")).findFirst().orElse(new Ship())))).mapToLong(x -> x).sum());//reduce(Long::sum).get());
-    totalHits.add(salvoOpponent.stream().map(salvo -> salvo.countHits((this.getShips().stream().filter(ship -> ship.getType().equals("patrolboat")).findFirst().orElse(new Ship())))).mapToLong(x -> x).sum());//reduce(Long::sum).get());
+    totalHits.add(salvoOpponent.stream().map(salvo -> salvo.countHits((this.getShips().stream().filter(ship -> ship.getType().equals("carrier")).findFirst().orElse(new Ship())))).mapToLong(x -> x).sum());
+    totalHits.add(salvoOpponent.stream().map(salvo -> salvo.countHits((this.getShips().stream().filter(ship -> ship.getType().equals("battleship")).findFirst().orElse(new Ship())))).mapToLong(x -> x).sum());
+    totalHits.add(salvoOpponent.stream().map(salvo -> salvo.countHits((this.getShips().stream().filter(ship -> ship.getType().equals("submarine")).findFirst().orElse(new Ship())))).mapToLong(x -> x).sum());
+    totalHits.add(salvoOpponent.stream().map(salvo -> salvo.countHits((this.getShips().stream().filter(ship -> ship.getType().equals("destroyer")).findFirst().orElse(new Ship())))).mapToLong(x -> x).sum());
+    totalHits.add(salvoOpponent.stream().map(salvo -> salvo.countHits((this.getShips().stream().filter(ship -> ship.getType().equals("patrolboat")).findFirst().orElse(new Ship())))).mapToLong(x -> x).sum());
 
     long resultado = totalHits.stream().reduce(Long::sum).get();
     return resultado;
