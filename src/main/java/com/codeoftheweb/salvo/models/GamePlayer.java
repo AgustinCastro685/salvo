@@ -146,7 +146,7 @@ public class GamePlayer {
                     .flatMap(shiploc -> salvoOpp
                             .getSalvoLocations()
                             .stream()
-                            .filter(salvoLoc -> shiploc.contains(salvoLoc))))
+                            .filter(salvoLoc -> shiploc.equals(salvoLoc))))
             .collect(Collectors.toList());
   }
 
