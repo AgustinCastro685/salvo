@@ -33,6 +33,9 @@ public class AppController {
   @Autowired
   private SalvoRepository salvoRepository;
 
+  @Autowired
+  private ScoreRepository scoreRepository;
+
   @RequestMapping("/game_view/{gamePlayer_id}")
   public ResponseEntity<Map<String, Object>> getGamePlayerAll(@PathVariable Long gamePlayer_id, Authentication authentication) {
 
@@ -63,7 +66,8 @@ public class AppController {
 
     Map<String, Object> hits = new LinkedHashMap<>();
     Map<String, Object> gameData = game2.makeGameDTO();
-    gameData.put("gameState", getState(gamePlayer, gamePlayer.getOpponent()));
+    String state = getState(gamePlayer, gamePlayer.getOpponent());
+    gameData.put("gameState", state);
     gameData.put("ships", gamePlayer.getShips()
             .stream()
             .map(ship -> ship.makeShipDTO())
@@ -73,8 +77,13 @@ public class AppController {
             .flatMap(gamePlayer1 -> gamePlayer1.getSalvoes().stream().map(salvo -> salvo.makeSalvoDTO()))
             .collect(Collectors.toList()));
     if (Objects.nonNull(gamePlayer.getOpponent())) {
-      hits.put("self", gamePlayer.makeHitsDTO(gamePlayer));
-      hits.put("opponent", gamePlayer.makeHitsDTO(gamePlayer.getOpponent()));
+      GamePlayer opponent = gamePlayer.getOpponent();
+      if (gamePlayer.getOpponent().getSalvoes().size() == 0) {
+        hits.put("self", new ArrayList<>());
+      } else {
+        hits.put("self", gamePlayer.makeHitsDTO());
+      }
+      hits.put("opponent", opponent.makeHitsDTO());
     } else {
       hits.put("self", new ArrayList<>());
       hits.put("opponent", new ArrayList<>());
@@ -89,19 +98,75 @@ public class AppController {
     if (gamePlayerSelf.getShips().isEmpty()) {
       return "PLACESHIPS";
     }
-    if (gamePlayerSelf.getGame().getGamePlayers().size() == 1) {
+    if (gamePlayerSelf.getGame().getGamePlayers().size() == 1||gamePlayerOpponent.getShips().size()==0) {
       return "WAITINGFOROPP";
     }
+
+    if (gamePlayerSelf.getSalvoes().size() == gamePlayerOpponent.getSalvoes().size()
+            && gamePlayerSelf.getSalvoes().size() != 0
+            && gamePlayerSelf.playerLost() == true
+            && gamePlayerOpponent.playerLost() == false) {
+
+      Date date = new Date();
+      if (this.hayScore(gamePlayerSelf.getGame()) == true) {
+        Score score = new Score(gamePlayerSelf.getGame(), gamePlayerSelf.getPlayer(), 1.0, date);
+        Score score1= new Score(gamePlayerOpponent.getGame(),gamePlayerOpponent.getPlayer(),0.0,date);
+        scoreRepository.save(score);
+        scoreRepository.save(score1);
+
+      }
+      return "WON";
+    }
+    if (gamePlayerSelf.getSalvoes().size() == gamePlayerOpponent.getSalvoes().size()
+            && gamePlayerSelf.playerLost() == true && gamePlayerOpponent.playerLost() == true
+            && gamePlayerOpponent.getSalvoes().size() != 0 && gamePlayerSelf.getSalvoes().size() != 0) {
+
+      Date date = new Date();
+
+      if (this.hayScore(gamePlayerSelf.getGame()) == true) {
+        Score score = new Score(gamePlayerSelf.getGame(), gamePlayerSelf.getPlayer(), 0.5, date);
+        Score score1= new Score(gamePlayerOpponent.getGame(),gamePlayerOpponent.getPlayer(),0.5,date);
+        scoreRepository.save(score);
+        scoreRepository.save(score1);
+      }
+      return "TIE";
+    }
+    if (gamePlayerSelf.playerLost() == false && gamePlayerOpponent.playerLost() == true
+            && gamePlayerSelf.getSalvoes().size() == gamePlayerOpponent.getSalvoes().size() && gamePlayerOpponent.getSalvoes().size() != 0 && gamePlayerSelf.getSalvoes().size() != 0) {
+      return "LOST";
+    }
+
     if (gamePlayerSelf.getId() < gamePlayerOpponent.getId()) {
-      return "PLAY";
+      if (gamePlayerSelf.getSalvoes().size() > gamePlayerOpponent.getSalvoes().size()) {
+        return "WAIT";
+      } else if (gamePlayerSelf.getSalvoes().size() == gamePlayerOpponent.getSalvoes().size()) {
+        return "PLAY";
+      } else {
+        return "WAIT";
+      }
     }
+
     if (gamePlayerSelf.getId() > gamePlayerOpponent.getId()) {
-      return "WAIT";
-    }if(gamePlayerSelf.countHitsWon()==gamePlayerOpponent.getShips().size()){
-       return "WON";
+      if (gamePlayerSelf.getSalvoes().size() < gamePlayerOpponent.getSalvoes().size()) {
+        return "PLAY";
+      } else if (gamePlayerSelf.getSalvoes().size() == gamePlayerOpponent.getSalvoes().size()) {
+        if (gamePlayerSelf.getId() > gamePlayerOpponent.getId()) {
+          return "WAIT";
+        } else {
+          return "PLAY";
+        }
+      }
     }
-    if(gamePlayerSelf.countHitsWon()==gamePlayerOpponent.countHitsWon())//&& //tengo que fijarme si el turno es el mismo )
-     {  return "TIE";}
     return "LOST";
   }
+
+  public boolean hayScore(Game game) {
+    if (game.getScores().isEmpty()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+
 }

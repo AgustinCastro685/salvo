@@ -3,6 +3,7 @@ package com.codeoftheweb.salvo.models;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,9 +30,7 @@ public class GamePlayer {
   private Game game;
 
   @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.EAGER)
-  private List<Salvo> salvoes;
-
-  private int missed = 5;
+  private Set<Salvo> salvoes;
 
   public GamePlayer(Date date, Player player, Game game) {
     this.joinDate = new Date();
@@ -93,11 +92,11 @@ public class GamePlayer {
     this.ships = ships;
   }
 
-  public List<Salvo> getSalvoes() {
+  public Set<Salvo> getSalvoes() {
     return salvoes;
   }
 
-  public void setSalvoes(List<Salvo> salvoes) {
+  public void setSalvoes(Set<Salvo> salvoes) {
     this.salvoes = salvoes;
   }
 
@@ -117,33 +116,31 @@ public class GamePlayer {
             .orElse(null);
   }
 
-  public List<Map<String, Object>> makeHitsDTO(GamePlayer gamePlayer) {
 
-    List<Map<String, Object>> dtoLista = new ArrayList<>();
-    Map<String, Object> dto = new LinkedHashMap<>();
+  public Set<Map<String, Object>> makeHitsDTO() {
 
-    for (Salvo s : gamePlayer.getOpponent().getSalvoes()) {
+    Set<Map<String, Object>> dtoLista = new LinkedHashSet<>();
+    List<Salvo> salvoes2 = this.getOpponent().getSalvoes().stream().sorted(Comparator.comparing(Salvo::getTurn)).collect(Collectors.toList());
+
+    for (Salvo s : salvoes2) {
+      Map<String, Object> dto = new LinkedHashMap<>();
+
       dto.put("turn", s.getTurn());
-      dto.put("hitLocations", this.getHitLocations(gamePlayer, s));
-      dto.put("damages", this.getShipByTipe(gamePlayer, s));
-      dto.put("missed", missed);
+      dto.put("hitLocations", this.getHitLocations(s));
+      dto.put("damages", this.getShipByTipe(s));
+      dto.put("missed", this.hitMissed(s));
       dtoLista.add(dto);
     }
     return dtoLista;
   }
 
-  public int carrier = 0;
-  public int battleship = 0;
-  public int submarine = 0;
-  public int destroyer = 0;
-  public int patrolboat = 0;
 
-  public List<String> getHitLocations(GamePlayer gamePlayer, Salvo salvoOpp) {
-    return gamePlayer.getShips()
+  public List<String> getHitLocations(Salvo s) {
+    return this.getShips()
             .stream()
             .flatMap(ship -> ship.getShipLocations()
                     .stream()
-                    .flatMap(shiploc -> salvoOpp
+                    .flatMap(shiploc -> s
                             .getSalvoLocations()
                             .stream()
                             .filter(salvoLoc -> shiploc.equals(salvoLoc))))
@@ -151,53 +148,64 @@ public class GamePlayer {
   }
 
 
-  public Map<String, Object> getShipByTipe(GamePlayer gamePlayer, Salvo s) {
+  public Map<String, Object> getShipByTipe(Salvo s) {
     Map<String, Object> dto1 = new LinkedHashMap<>();
 
-    int carrierHits = this.countHits(gamePlayer.getShips().stream().filter(ship -> ship.getType() == "carrier").findFirst().orElse(new Ship()), gamePlayer, s);
-    int battleshipHits = this.countHits(gamePlayer.getShips().stream().filter(ship -> ship.getType() == "battleship").findFirst().orElse(new Ship()), gamePlayer, s);
-    int submarineHits = this.countHits(gamePlayer.getShips().stream().filter(ship -> ship.getType() == "submarine").findFirst().orElse(new Ship()), gamePlayer, s);
-    int destroyerHits = this.countHits(gamePlayer.getShips().stream().filter(ship -> ship.getType() == "destroyer").findFirst().orElse(new Ship()), gamePlayer, s);
-    int patrolboatHits = this.countHits(gamePlayer.getShips().stream().filter(ship -> ship.getType() == "patrolboat").findFirst().orElse(new Ship()), gamePlayer, s);
+    dto1.put("carrierHits", s.countHits(this.getShips().stream().filter(ship -> ship.getType().equals("carrier")).findFirst().orElse(new Ship())));
+    dto1.put("battleshipHits", s.countHits(this.getShips().stream().filter(ship -> ship.getType().equals("battleship")).findFirst().orElse(new Ship())));
+    dto1.put("submarineHits", s.countHits(this.getShips().stream().filter(ship -> ship.getType().equals("submarine")).findFirst().orElse(new Ship())));
+    dto1.put("destroyerHits", s.countHits(this.getShips().stream().filter(ship -> ship.getType().equals("destroyer")).findFirst().orElse(new Ship())));
+    dto1.put("patrolboatHits", s.countHits(this.getShips().stream().filter(ship -> ship.getType().equals("patrolboat")).findFirst().orElse(new Ship())));
 
-    dto1.put("carrierHits", carrierHits);
-    dto1.put("battleshipHits", battleshipHits);
-    dto1.put("submarineHits", submarineHits);
-    dto1.put("destroyerHits", destroyerHits);
-    dto1.put("patrolboatsHits", patrolboatHits);
 
-    dto1.put("carrier", carrier += carrierHits);
-    dto1.put("battleship", battleship += battleshipHits);
-    dto1.put("submarine", submarine += submarineHits);
-    dto1.put("destroyer", destroyer += destroyerHits);
-    dto1.put("patrolboat", patrolboat += patrolboatHits);
+    List<Salvo> salvoOpponent = new ArrayList<>(this.getOpponent().getSalvoes());
 
-    int x = (carrierHits + battleshipHits + submarineHits + destroyerHits + patrolboatHits);
-    this.missed = 5;
-    this.missed -= x;
+    dto1.put("carrier", salvoOpponent
+            .stream().map(salvo -> salvo.countHits(this.getShips().stream().filter(ship -> ship.getType().equals("carrier")).findFirst().orElse(new Ship()))).reduce(Long::sum).get());
+
+    dto1.put("battleship", salvoOpponent
+            .stream().map(salvo -> salvo.countHits(this.getShips().stream().filter(ship -> ship.getType().equals("battleship")).findFirst().orElse(new Ship()))).reduce(Long::sum).get());
+
+    dto1.put("submarine", salvoOpponent
+            .stream().map(salvo -> salvo.countHits(this.getShips().stream().filter(ship -> ship.getType().equals("submarine")).findFirst().orElse(new Ship()))).reduce(Long::sum).get());
+
+    dto1.put("destroyer", salvoOpponent
+            .stream().map(salvo -> salvo.countHits(this.getShips().stream().filter(ship -> ship.getType().equals("destroyer")).findFirst().orElse(new Ship()))).reduce(Long::sum).get());
+
+    dto1.put("patrolboat", salvoOpponent
+            .stream().map(salvo -> salvo.countHits(this.getShips().stream().filter(ship -> ship.getType().equals("patrolboat")).findFirst().orElse(new Ship()))).reduce(Long::sum).get());
+
     return dto1;
   }
 
-  public int countHits(Ship ship, GamePlayer gamePlayer, Salvo s) {
+  public long hitMissed(Salvo s) {
+    long missed = 5 - this.getHitLocations(s).stream().count();
+    return missed;
+  }
 
-    int totalHits = gamePlayer.getHitLocations(gamePlayer, s).size();
-    int contador = 0;
+  public long totalHits() {
+    List<Long> totalHits = new ArrayList<>();
+    List<Salvo> salvoOpponent = new ArrayList<>(this.getOpponent().getSalvoes());
 
-    if (ship.getType() != null && totalHits != 0) {
+    totalHits.add(salvoOpponent.stream().map(salvo -> salvo.countHits((this.getShips().stream().filter(ship -> ship.getType().equals("carrier")).findFirst().orElse(new Ship())))).mapToLong(x -> x).sum());//reduce(Long::sum).get());
+    totalHits.add(salvoOpponent.stream().map(salvo -> salvo.countHits((this.getShips().stream().filter(ship -> ship.getType().equals("battleship")).findFirst().orElse(new Ship())))).mapToLong(x -> x).sum());//reduce(Long::sum).get());
+    totalHits.add(salvoOpponent.stream().map(salvo -> salvo.countHits((this.getShips().stream().filter(ship -> ship.getType().equals("submarine")).findFirst().orElse(new Ship())))).mapToLong(x -> x).sum());//reduce(Long::sum).get());
+    totalHits.add(salvoOpponent.stream().map(salvo -> salvo.countHits((this.getShips().stream().filter(ship -> ship.getType().equals("destroyer")).findFirst().orElse(new Ship())))).mapToLong(x -> x).sum());//reduce(Long::sum).get());
+    totalHits.add(salvoOpponent.stream().map(salvo -> salvo.countHits((this.getShips().stream().filter(ship -> ship.getType().equals("patrolboat")).findFirst().orElse(new Ship())))).mapToLong(x -> x).sum());//reduce(Long::sum).get());
 
-      for (String locationShip : ship.getShipLocations()) {
-        if (gamePlayer.getHitLocations(gamePlayer, s).contains(locationShip)) {
-          contador++;
-        }
-      }
+    long resultado = totalHits.stream().reduce(Long::sum).get();
+    return resultado;
+  }
+
+  public boolean playerLost() {
+    boolean ok = false;
+
+    if (this.getShips()
+            .stream().mapToLong(ship -> ship.getShipLocations().size())
+            .sum() == this.getOpponent().totalHits()) {
+      ok = true;
     }
-    return contador;
+    return ok;
   }
-  public int countHitsWon(){
-    int hits=0;
 
-    hits=(carrier+ battleship + submarine+ destroyer+ patrolboat);
-    return hits;
-
-  }
 }

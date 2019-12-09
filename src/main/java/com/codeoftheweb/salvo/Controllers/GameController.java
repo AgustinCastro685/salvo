@@ -47,11 +47,6 @@ public class GameController {
             .map(game -> game.makeGameDTO())
             .collect(Collectors.toList()));
     return dto;
-    // GamePlayer gamePlayer;
-    //return gameRepository.findAll()
-    //        .stream()
-    //        .map(game -> game.makeGameDTO())
-    //        .collect(Collectors.toList());
   }
 
   @RequestMapping(path = "/games", method = RequestMethod.POST)
@@ -87,7 +82,7 @@ public class GameController {
       return new ResponseEntity<>("No such game", HttpStatus.UNAUTHORIZED);
     }
 
-    if (game.getGamePlayers().size()==2) {
+    if (game.getGamePlayers().size() == 2) {
       return new ResponseEntity<>("Game is full", HttpStatus.FORBIDDEN);
     }
 
@@ -121,31 +116,31 @@ public class GameController {
   }
 
   @RequestMapping(path = "/games/players/{gpId}/salvoes", method = RequestMethod.POST)
-  public ResponseEntity<Map<String,Object>> addSalvoes(@PathVariable long gpId, @RequestBody Salvo salvo, Authentication authentication) {
+  public ResponseEntity<Map<String, Object>> addSalvoes(@PathVariable long gpId, @RequestBody Salvo salvo, Authentication authentication) {
 
     GamePlayer gamePlayer = gamePlayerRepository.findById(gpId).get();
     Player player = playerRepository.findByUserName(authentication.getName());
 
     if (Util.isGuest(authentication)) {
-      return new ResponseEntity<>(Util.makeMap("error","there is no current user logged in"), HttpStatus.UNAUTHORIZED);
+      return new ResponseEntity<>(Util.makeMap("error", "there is no current user logged in"), HttpStatus.UNAUTHORIZED);
     }
 
-    if (gamePlayer==null) {
-      return new ResponseEntity<>(Util.makeMap("Error","there is no game player with the given ID"), HttpStatus.UNAUTHORIZED);
+    if (gamePlayer == null) {
+      return new ResponseEntity<>(Util.makeMap("Error", "there is no game player with the given ID"), HttpStatus.UNAUTHORIZED);
     }
-    if (gamePlayer.getPlayer().getId()!=player.getId()) {
+    if (gamePlayer.getPlayer().getId() != player.getId()) {
       return new ResponseEntity<>(Util.makeMap("error", "the current user is not the game player the ID references"), HttpStatus.UNAUTHORIZED);
     }
 
 
-    if (gamePlayer.getSalvoes().stream().filter(salvo1 -> salvo1.getTurn() == salvo.getTurn()).count() > 0 ) {
+    if (gamePlayer.getSalvoes().stream().filter(salvo1 -> salvo1.getTurn() == salvo.getTurn()).count() > 0) {
       return new ResponseEntity<>(Util.makeMap("Error", "Ya colocaste tus salvos en este turno"), HttpStatus.FORBIDDEN);
     }
 
-    salvo.setTurn(gamePlayer.getSalvoes().size() +1);
+    salvo.setTurn(gamePlayer.getSalvoes().size() + 1);
     salvo.setGamePlayer(gamePlayer);
     salvoRepository.save(salvo);
-    return new ResponseEntity<>(Util.makeMap("Salvos","Salvos added"), HttpStatus.CREATED);
+    return new ResponseEntity<>(Util.makeMap("Salvos", "Salvos added"), HttpStatus.CREATED);
 
   }
 

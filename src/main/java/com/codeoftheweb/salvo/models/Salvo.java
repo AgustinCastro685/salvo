@@ -80,4 +80,15 @@ public class Salvo {
   public void setGamePlayer(GamePlayer gamePlayer) {
     this.gamePlayer = gamePlayer;
   }
+
+  public long countHits(Ship ship) {
+    if (ship.getType().equals(null)) {
+      return 0;
+    } else {
+      return this.getSalvoLocations()
+              .stream()
+              .filter(salvoLocs -> ship.getShipLocations().contains(salvoLocs))
+              .count();
+    }
+  }
 }
